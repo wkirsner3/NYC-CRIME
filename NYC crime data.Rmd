@@ -1,0 +1,84 @@
+---
+title: "NYC CRIME DATA"
+author: "Will K"
+date: "8/2/2021"
+output:
+  pdf_document: default
+  html_document: default
+---
+##NYC SHOOTING INCIDENTS HISTORIC
+``````{r get_NYC_data}
+install.packages("ggrepel", repos = "http://cran.us.r-project.org")
+install.packages("tidyverse", repos = "http://cran.us.r-project.org")
+install.packages("lubridate", repos = "http://cran.us.r-project.org")
+install.packages("rvest", repos = "http://cran.us.r-project.org")
+install.packages("Recon", repos = "http://cran.us.r-project.org")
+install.packages("incidence", repos = "http://cran.us.r-project.org")
+install.packages("ggmap", repos = "http://cran.us.r-project.org")
+install.packages("readxl", repos = "http://cran.us.r-project.org")
+install.packages("ggthemes", repos = "http://cran.us.r-project.org")
+install.packages("sf", repos = "http://cran.us.r-project.org") 
+install.packages("tmap", repos = "http://cran.us.r-project.org")
+library(tidyverse)
+library(rvest)
+library(lubridate)
+library(incidence)
+library(ggrepel)
+library(ggmap)
+library(ggthemes)
+library(sf)
+library(tmap)
+library(tinytex)
+tinytex::install_tinytex()
+```
+###Now lets read the NYC crime data
+
+```{r}
+url_in <-"https://data.cityofnewyork.us/api/views/833y-fsy8/rows.csv?accessType=DOWNLOAD"
+NYPD <- read.csv("~/data/NYPD_Shooting_Incident_Data__Historic_ (1).csv")
+
+```
+#We seek to 
+``` {R tidy}
+
+
+Crime <- NYPD %>% 
+  select(-c('X_COORD_CD','X_COORD_CD','Latitude', 'Longitude', 'Lon_Lat', 'JURISDICTION_CODE','LOCATION_DESC','INCIDENT_KEY','Y_COORD_CD'))
+Crime
+
+race1 <- table(Crime$PERP_RACE)
+race <- as.data.frame(race1)
+
+
+
+
+
+sex_vic <- table(Crime$VIC_SEX)
+sex_vic <- as.data.frame(sex_vic)
+## Model based on frequency per victim sex
+sex_vic$Percent <- round((sex_vic$Freq / sum(sex_vic$Freq)*100),2)
+table(sex_vic)
+  
+
+
+             
+```
+
+
+``` {R PLOT}
+
+ggplot(race, aes(x=Var1, y=Freq)) + geom_bar(stat="identity") + geom_text_repel(data=race, aes(label=Var1))
+
+Boro_Crime <- table(Crime$BORO)
+barplot(Boro_Crime, main="Incident of Shootings per BORO",
+        xlab="BORO")
+
+ggplot(Crime, aes(x = PERP_AGE_GROUP)) + 
+  geom_histogram(stat = "count")
+
+```
+## Biases in the data emerge when considering the wide variety of people who live in NYC and the flucuating rates of crimes in the city as well. We do not want to make assumptions such as "Men who live in brooklyn are incredibly likely to get shot" this is just an assertion of trends hisorically in New york. This is a compelling data because it shows the orgins of policies such as "Stop-and-Frisk" policies which were created partly on the basis of poorly bias indentification in data visualization and modeling.
+```{r}
+
+```
+
